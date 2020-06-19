@@ -1,0 +1,8 @@
+Bestand : "C:\Program Files\Apache Software Foundation\Tomcat 9.0\conf\server.xml"
+    Gewijzigd :
+    <Server port="-1" shutdown="SHUTDOWN">
+    in
+    <Server port="1" shutdown="SHUTDOWN">
+    Reden
+    https://stackoverflow.com/questions/58582457/tomcat-9-027-port-out-of-range
+

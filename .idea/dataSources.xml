@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="wiw2@acmssqldev" uuid="13b8aab1-dfd8-49d5-8cf7-f0e12e36eec2">
+      <driver-ref>sqlserver.ms</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
+      <jdbc-url>jdbc:sqlserver://acmssqldev:1433;database=WIW2_Dev</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="WIWPersistenceUnit/Hibernate" uuid="08e8622f-6276-4b18-98a5-d4f2fae308ee">
+      <driver-ref>sqlserver.ms</driver-ref>
+      <synchronize>true</synchronize>
+      <imported>true</imported>
+      <remarks>Hibernate
+
+C:/Users/de mets jp/IdeaProjects/TestInfromix2/META-INF/persistence.xml</remarks>
+      <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
+      <jdbc-url>jdbc:sqlserver://acmssqldev:1433;databaseName=WIW2_Dev</jdbc-url>
+    </data-source>
+  </component>
+</project>

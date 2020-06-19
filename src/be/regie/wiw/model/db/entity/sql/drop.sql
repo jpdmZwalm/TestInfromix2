@@ -1,0 +1,54 @@
+DROP TABLE IF EXISTS dbo.CheckInOut
+GO
+
+DROP TABLE IF EXISTS dbo.Transport
+GO
+
+DROP TABLE IF EXISTS dbo.LicensePlate
+GO
+
+DROP TABLE IF EXISTS dbo.Voip
+GO
+
+DROP TABLE IF EXISTS dbo.person_secgrp
+GO
+
+DROP TABLE IF EXISTS dbo.SecurityGroup
+GO
+
+ALTER TABLE Service DROP CONSTRAINT IF EXISTS srv_pe_hoofd_FK
+GO
+
+DROP TABLE IF EXISTS dbo.Person
+GO
+
+DROP TABLE IF EXISTS dbo.Approach
+GO
+
+DROP TABLE IF EXISTS dbo.Title
+GO
+
+DROP TABLE IF EXISTS dbo.Degree
+GO
+
+DROP TABLE IF EXISTS dbo.Class
+GO
+
+DROP TABLE IF EXISTS dbo.Function_
+GO
+
+DROP TABLE IF EXISTS dbo.Statue
+GO
+
+DROP TABLE IF EXISTS dbo.Room
+GO
+
+DROP TABLE IF EXISTS dbo.Service
+GO
+
+DROP TABLE IF EXISTS dbo.Organisation
+GO
+
+DROP TABLE IF EXISTS dbo.Address
+GO
+

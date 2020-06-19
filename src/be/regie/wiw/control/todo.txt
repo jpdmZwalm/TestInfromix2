@@ -1,0 +1,38 @@
+//TODO
+Persoon die 2 keer voorkomt, enkel 4162 overgenomen
+pe_id          	    4162	    3958
+pe_code	            <null>	    <null>
+pe_naam	            Pulinckx	Pulinckx
+pe_vnaam        	Sabine      Sabine
+pe_taal 	        N	F
+pe_telnr    	    02 541 63 11
+pe_email        	accueil.cabinet@laruelle.fgov.be
+pe_lokaal	        <null>
+pe_titel    	    2	        <null>
+pe_titel_nl 	    ing.	    <null>
+pe_titel_fr     	ing.	    <null>
+pe_as_vorm	        2
+pe_org_id   	    4
+pe_org_komschr_nl	Kabinet
+pe_org_komschr_fr	Cabinet
+pe_srv_id	        107
+pe_grd_omschr_nl	Secrétaire PME -Classes Moyennes	Collaborateur Politique Générale
+pe_grd_omschr_fr	Secrétaire PME -Classes Moyennes	Frans
+pe_fct_omschr_nl	Secrétaire PME -Classes Moyennes	Collaborateur Politique Générale
+pe_fct_omschr_fr	Secrétaire PME -Classes Moyennes	Frans
+pe_adm_adres	    Gulden Vlieslaan 87 b2	            Avenue de la Toison d'Or 87 b2
+pe_adm_gemeente	    1060 BRUSSEL	                    1060 BRUSSEL
+pe_wrk_id	        1
+pe_wrk_adres	    Gulden Vlieslaan 87 b2	            Avenue de la Toison d'Or 87 b2
+pe_wrk_gemeente	    1060 BRUSSEL	                    1060 BRUXELLES
+
+Licensplate die twee keer voorkomt
+lp_id	        191	        192
+lp_pe_id	    1807	    3017
+                Vicca Vital Van Melle Katy
+lp_licenseplate	1-GIH 578	1-GIH 578
+lp_brand	    Opel	    Opel
+lp_color
+lp_type	        Corsa	    Corsa
+lp_upd	        <null>	    <null>
+lp_upd_pe_code	<null>	    <null>
