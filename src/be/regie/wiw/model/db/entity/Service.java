@@ -32,6 +32,7 @@ import javax.persistence.*;
 //ON dbo.service (srv_code_ui)
 //WHERE srv_dnst_code IS NOT NULL;
 
+//TODO vergelijk met wiwServer2
 public class Service {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
