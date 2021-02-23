@@ -1,6 +1,7 @@
 package be.regie.wiw.model.dbold;
 
 import be.regie.wiw.model.db.entity.Service;
+import be.regie.wiw.util.Vertaal;
 
 import javax.persistence.NamedQuery;
 import javax.persistence.TypedQuery;
@@ -32,6 +33,10 @@ public class ServiceDaoOld extends AbstractDaoOld {
 
     @Override
     public List<Map<String, ColumnDescriptor>> getAll() {
+        Vertaal vertaal = Vertaal.getInstance();
+        Map<String, String> vertaalOrgMapNL = vertaal.getMapOrgShortNL();
+        Map<String, String> vertaalOrgMapFR = vertaal.getMapOrgShortFR();
+
         List<Map<String, ColumnDescriptor>> resultList = new ArrayList<>();
         try {
             Statement statement = connection.createStatement();
@@ -51,10 +56,17 @@ public class ServiceDaoOld extends AbstractDaoOld {
 
                 colName = "srv_org_id";
                 item.put(colName, new ColumnDescriptor("INT", rs.getInt(colName)));
+
                 colName = "srv_org_komschr_nl";
-                item.put(colName, new ColumnDescriptor("STR", rs.getString(colName)));
+                String org_komschr_nl = rs.getString(colName).trim();
+                org_komschr_nl = vertaalOrgMapNL.getOrDefault(org_komschr_nl, org_komschr_nl);
+                item.put(colName, new ColumnDescriptor("STR", org_komschr_nl));
+
                 colName = "srv_org_komschr_fr";
-                item.put(colName, new ColumnDescriptor("STR", rs.getString(colName)));
+                String org_komschr_fr = rs.getString(colName).trim();
+                org_komschr_fr = vertaalOrgMapNL.getOrDefault(org_komschr_fr, org_komschr_fr);
+                item.put(colName, new ColumnDescriptor("STR", org_komschr_fr));
+
                 colName = "srv_org_omschr_nl";
                 item.put(colName, new ColumnDescriptor("STR", rs.getString(colName)));
                 colName = "srv_org_omschr_fr";

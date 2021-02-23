@@ -2,10 +2,13 @@ package be.regie.wiw.model.db.entity;
 
 import javax.persistence.*;
 
+/*
 @Entity
 @Table(name = "room",
        indexes = {@Index(name="ro_code_ui",columnList = "ro_code", unique = true)})
-public class Room {
+ */
+public class Room { //CHANGED : NOT USED
+/*
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="pk_ro_id")
@@ -116,4 +119,6 @@ public class Room {
     public void setAddress(Address address) {
         this.address = address;
     }
+
+ */
 }

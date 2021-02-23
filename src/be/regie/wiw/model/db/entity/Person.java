@@ -1,8 +1,12 @@
 package be.regie.wiw.model.db.entity;
 
+import be.regie.wiw.model.db.entity.security.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -15,11 +19,15 @@ import java.util.Set;
                         "  AND p.fname = :fname"),
         @NamedQuery(name = "Person.oldId",
                 query = "SELECT p FROM Person p " +
-                        "WHERE p.oldId = :oldId")
+                        "WHERE p.oldId = :oldId"),
+        @NamedQuery(name = "Person.serviceHead",
+                query = "SELECT p FROM Person p " +
+                        "JOIN Service s ON p.id = s.head.id " +
+                        "WHERE s.id = :serviceId")
 })
 @Table(name = "person",
         indexes = {@Index(name = "pe_name_UI", columnList = "pe_name, pe_fname", unique = true)})
-//TODO SQL Server aanvaard geen duplicat null in unique
+//TODO SQL Server aanvaard geen duplicate null in unique
 //       @Index(name = "pe_code_UI", columnList = "pe_code", unique = true)
 //CREATE UNIQUE NONCLUSTERED INDEX pe_code_UI
 //ON dbo.person
@@ -68,25 +76,32 @@ public class Person {
     @Column(name="pe_employer", columnDefinition = "NVARCHAR(70)")
     private String employer;
 
+    @Column(name="pe_room", columnDefinition = "NVARCHAR(60)")
+    private String room; //CHANGED : NEW
+
     @Column(name="pe_photo", columnDefinition = "NVARCHAR(70)")
     private String photo; //was BLOB,
 
     @Column(name="pe_photoVisible")
     private boolean photoVisible;
+    
+    @Column(name="pe_external") //CHANGED : NEW
+    private boolean external;
 
+    /*CHANGED : IS WEG
     @Column(name="pe_stamnr", columnDefinition = "CHAR(20)")
     private String stamnr;
+     */
 
     @Column(name="pe_updated", nullable = false, columnDefinition="DATETIME DEFAULT GETDATE()")
     @Temporal(TemporalType.DATE)
     private Date updated;
 
-
-    //TODO pe_higherFunction moet weg
-
+    /*CHANGED : IS WEG
     @ManyToOne(optional = true)
     @JoinColumn(name = "fk_pe_hf_id")
     private HigherFunction higherFunction;
+     */
 
     //TODO alter table "dbo"."person" alter column fk_pe_adr_id_adm int not null
     @ManyToOne(optional = true)
@@ -113,14 +128,16 @@ public class Person {
     @JoinColumn(name = "fk_pe_deg_id")
     private Degree degree;
 
-    //TODO alter table "dbo"."person" alter column  fk_pe_ro_id int not null
+    /*CHANGED : IS WEG
     @ManyToOne(optional = true)
     @JoinColumn(name = "fk_pe_ro_id")
     private Room room;
+     */
 
+    // CHANGED : RENAMED xx
     @ManyToOne(optional = false)
     @JoinColumn(name = "fk_pe_st_id")
-    private Statue statue;
+    private Statute statute;
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "fk_pe_ti_id")
@@ -135,6 +152,18 @@ public class Person {
     @JoinColumn(name = "fk_pe_org_id")
     private Organisation org;
 
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "fk_pe_spe_id")
+    private Speciality speciality;  //CHANGED : NEW
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "fk_pe_hf_id")
+    private HigherFunction higherFunction;  //CHANGED : NEW
+
+    @JsonIgnore
+    @OneToOne(optional = true, mappedBy = "person")
+    private User user;
+
     @ManyToMany()
     @JoinTable(
             name = "person_secgrp",
@@ -142,15 +171,25 @@ public class Person {
             inverseJoinColumns = @JoinColumn(name = "fk_psg_sg_id"))
     Set<SecurityGroup> securityGroups;
 
-    public Person() {}
+    public Person() {
+        this.securityGroups = new HashSet<>();  //CHANGED : NEW
+    	}
 
-    public Person(Integer code,  String nationalNumber, String name,   String fname,    String language,
-                  String tel,    String mobile,         String email,  String employer, String photo,
-                  boolean photoVisible, HigherFunction higherFunction, String stamnr,   Date updated,
-                  Address addressAdmin, Address addressWork,   Approach approach, CClass clazz,
-                  Function function,    Degree degree,         Room room,         Statue statue,
-                  Title title,          Service service,       Organisation org) {
-        setCode(code);
+    public Person(Integer code, String nationalNumber, String name, String fname, String language,
+                  String tel, String mobile, String email, String employer, String photo,
+                  boolean photoVisible,
+                  //CHANGED : WEG : HigherFunction higherFunction,
+                  //CHANGED : WEG : String stamnr,
+                  Date updated,
+                  Address addressAdmin, Address addressWork,
+                  Approach approach, CClass clazz, Function function, Degree degree,
+                  String room, //CHANGED : NEW
+                  //CHANGED : WEG : Room room,
+                  Statute statute, Title title, Service service, Organisation org,
+                  Speciality speciality, //CHANGED : NEW
+                  HigherFunction higherFunction) { //CHANGED : NEW
+        this(); //CHANGED : NEW
+        setCode(code); //CHANGED : NEW
         setNationalNumber(nationalNumber);
         this.name = name;
         this.fname = fname;
@@ -161,8 +200,8 @@ public class Person {
         this.employer = employer;
         this.photo = photo;
         this.photoVisible = photoVisible;
-        this.higherFunction = higherFunction;
-        this.stamnr = stamnr;
+        //this.higherFunction = higherFunction; //CHANGED : WEG
+        //this.stamnr = stamnr; //CHANGED : WEG
         this.updated = updated;
         this.addressAdmin = addressAdmin;
         this.addressWork = addressWork;
@@ -171,10 +210,12 @@ public class Person {
         this.function = function;
         this.degree = degree;
         this.room = room;
-        this.statue = statue;
+        this.statute = statute;
         this.title = title;
         this.service = service;
         this.org = org;
+        this.speciality = speciality; //CHANGED : NEW
+        this.higherFunction = higherFunction; //CHANGED : NEW
     }
 
     public Integer getId() {
@@ -289,20 +330,12 @@ public class Person {
         this.photoVisible = photoVisible;
     }
 
-    public HigherFunction getHigherFunction() {
-        return higherFunction;
+    public boolean isExternal() { //CHANGED : NEW
+        return external;
     }
 
-    public void setHigherFunction(HigherFunction higherFunction) {
-        this.higherFunction = higherFunction;
-    }
-
-    public String getStamnr() {
-        return stamnr;
-    }
-
-    public void setStamnr(String stamnr) {
-        this.stamnr = stamnr;
+    public void setExternal(boolean external) { //CHANGED : NEW
+        this.external = external;
     }
 
     public Date getUpdated() {
@@ -361,20 +394,20 @@ public class Person {
         this.degree = degree;
     }
 
-    public Room getRoom() {
+    public String getRoom() {
         return room;
     }
 
-    public void setRoom(Room room) {
+    public void setRoom(String room) {
         this.room = room;
     }
 
-    public Statue getStatue() {
-        return statue;
+    public Statute getStatute() {
+        return statute;
     }
 
-    public void setStatue(Statue statue) {
-        this.statue = statue;
+    public void setStatute(Statute statute) {
+        this.statute = statute;
     }
 
     public Title getTitle() {
@@ -399,6 +432,22 @@ public class Person {
 
     public void setOrg(Organisation org) {
         this.org = org;
+    }
+
+    public Speciality getSpeciality() { //CHANGED : NEW
+        return speciality;
+    }
+
+    public void setSpeciality(Speciality speciality) { //CHANGED : NEW
+        this.speciality = speciality;
+    }
+
+    public HigherFunction getHigherFunction() { //CHANGED : NEW
+        return higherFunction;
+    }
+
+    public void setHigherFunction(HigherFunction higherFunction) { //CHANGED : NEW
+        this.higherFunction = higherFunction;
     }
 
     public void addSecurityGroup(SecurityGroup securityGroup) {

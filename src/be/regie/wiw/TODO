@@ -1,0 +1,94 @@
+select pe_fct_omschr_nl, pe_fct_omschr_fr, pe_grd_omschr_nl, pe_grd_omschr_fr from persons
+where pe_fct_omschr_nl = pe_grd_omschr_nl or pe_fct_omschr_fr = pe_grd_omschr_fr
+43 keer gelijk
+40 keer verschil
+
+person en usersecurity : delete is cascade
+
+in usersecurity, maar niet in person
++NOT : REGIE\Onthaal
++NOT : REGIE\Camby P
++NOT : REGIE\student4
++NOT : REGIE\DG Stagiaire
++NOT : REGIE\Thibaut Se
++NOT : REGIE\Baeyens K
++NOT : REGIE\Imtech
++NOT : REGIE\bxlstagiaire1
++NOT : REGIE\student7
++NOT : REGIE\ENER stagiaire
++NOT : REGIE\De La Bruyere F
++NOT : REGIE\Vandroogenbroeck P
++NOT : REGIE\Administrator
++NOT : REGIE\Breemeersch J
++NOT : REGIE\Trznadel M
++NOT : REGIE\Bily D
++NOT : REGIE\cad.support
++NOT : REGIE\Van De Velde J
++NOT : REGIE\Security BRU
++NOT : REGIE\ICT Stagiaire
++NOT : REGIE\student5
++NOT : REGIE\Guessom Tabue Y
++NOT : REGIE\MEDIATEUR
++NOT : REGIE\Napolitano O
++NOT : REGIE\Gent_Scan_Operator
++NOT : REGIE\Lachiri A
++NOT : REGIE\Student-prof
++NOT : REGIE\Compta C
++NOT : REGIE\Wynants S
++NOT : REGIE\Hanot D
++NOT : REGIE\STAB Stagiaire
++NOT : REGIE\Claes H
++NOT : ACASPNET\IUSR_ACASPNET
++NOT : REGIE\REST Stagiaire
++NOT : REGIE\PO Stagiaire
++NOT : REGIE\gent stagiair
++NOT : REGIE\De Fauw J
++NOT : REGIE\Vandevelde J
++NOT : REGIE\student10
++NOT : REGIE\student6
++NOT : REGIE\kestens J
++NOT : REGIE\testinfoges
++NOT : REGIE\student1
++NOT : REGIE\Van Der Kaa JP
++NOT : REGIE\Brugmans JL
++NOT : REGIE\De Bruyne G
++NOT : REGIE\La.Niels D
++NOT : REGIE\Vanstraeseele S
++NOT : REGIE\Lahaye AM
++NOT : REGIE\student3
++NOT : REGIE\Noels E
++NOT : REGIE\student9
++NOT : REGIE\Cornil C
++NOT : REGIE\arlstagiaire
++NOT : REGIE\AhmedMalek D
++NOT : REGIE\Van Marcke N
++NOT : REGIE\Engie
++NOT : REGIE\installator
++NOT : REGIE\0Decelle B
++NOT : REGIE\De Waele J
++NOT : REGIE\Baetens K
++NOT : REGIE\La.Lou B
++NOT : REGIE\Thibaut S
++NOT : REGIE\PO Stagiaire2
++NOT : REGIE\Mayat S
++NOT : REGIE\audit
++NOT : REGIE\Dabbour M
++NOT : REGIE\Ozel D
++NOT : REGIE\De Knikker R
+
+TODO Person : fk_pe_adr_id_adm : manueel doen
+
+Paymaster toevoegen
+
+Hernummeren
+degree       139 => 1
+function      68 => 1
+higerfunction  3 => 1
+securityUser 221 => 1 Opnieuw
+service       60 => 1 Opnieuw
+
+
+Adres met id > 54 komt uit andere tabellen
+
+
+

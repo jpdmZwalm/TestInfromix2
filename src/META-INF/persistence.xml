@@ -17,11 +17,19 @@
         <class>be.regie.wiw.model.db.entity.Title</class>
         <class>be.regie.wiw.model.db.entity.Degree</class>
         <properties>
+            <property name="hibernate.connection.driver_class" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+            <!-- Dev database
             <property name="hibernate.connection.url"
                       value="jdbc:sqlserver://acmssqldev:1433;databaseName=WIW2_Dev"/>
-            <property name="hibernate.connection.driver_class" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
             <property name="hibernate.connection.username" value="wiw2"/>
             <property name="hibernate.connection.password" value="wiw20200504#"/>
+                 Dev database-->
+            <!-- Prod database -->
+            <property name="hibernate.connection.url"
+                      value="jdbc:sqlserver://acmssqlprod:1433;database=WIW_Prod"/>
+            <property name="hibernate.connection.username" value="wiw"/>
+            <property name="hibernate.connection.password" value="?XCYX28VXR-uvtTS"/>
+            <!-- Prod database -->
             <property name="hibernate.archive.autodetection" value="class"/>
             <property name="hibernate.show_sql" value="false"/>
             <property name="hibernate.format_sql" value="true"/>

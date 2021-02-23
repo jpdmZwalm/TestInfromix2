@@ -1,11 +1,11 @@
 package be.regie.wiw.model.db.dao;
 
-import be.regie.wiw.model.db.entity.Statue;
+import be.regie.wiw.model.db.entity.Statute;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
-public class StatueDao extends AbstractDao2<Statue> {
+public class StatueDao extends AbstractDao2<Statute> {
 
     public StatueDao(EntityManager entityManager) {
         super(entityManager);
@@ -13,36 +13,36 @@ public class StatueDao extends AbstractDao2<Statue> {
 
     @Override
     public String getTableName() {
-        return Statue.class.getSimpleName();
+        return Statute.class.getSimpleName();
     }
 
     @Override
-    public void persist(Statue statue) {
+    public void persist(Statute statue) {
         //beginTransaction();
         entityManager.persist(statue);
         //commitTransaction();
     }
 
     @Override
-    public Statue find(int id) {
-        return entityManager.find(Statue.class, id);
+    public Statute find(int id) {
+        return entityManager.find(Statute.class, id);
     }
 
     @Override
-    public List<Statue> findAll() {
-        List<Statue> allStatue =
-                entityManager.createQuery("SELECT s FROM Statue s").getResultList();
+    public List<Statute> findAll() {
+        List<Statute> allStatue =
+                entityManager.createQuery("SELECT s FROM Statute s").getResultList();
         return allStatue;
     }
 
     @Override
-    public void update(Statue statue) {
+    public void update(Statute statue) {
         entityManager.merge(statue);
     }
 
     @Override
     public void remove(int id) {
-        Statue statue = entityManager.find(Statue.class, id);
+        Statute statue = entityManager.find(Statute.class, id);
         entityManager.remove(statue);
     }
 

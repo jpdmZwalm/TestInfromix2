@@ -75,4 +75,15 @@ public class Function {
     public void setDescrFR(String descrFR) {
         this.descrFR = descrFR;
     }
+
+    @Override
+    public String toString() {
+        return "Function{" +
+                "id=" + id +
+                ", oldId=" + oldId +
+                ", oldSource='" + oldSource + '\'' +
+                ", descrNL='" + descrNL + '\'' +
+                ", descrFR='" + descrFR + '\'' +
+                '}';
+    }
 }

@@ -14,9 +14,12 @@ import javax.persistence.*;
                 query = "SELECT o FROM Organisation o " +
                         "WHERE o.shortFR = :shortFR " +
                         "  AND o.longFR  = :longFR"),
-        @NamedQuery(name = "Organisation.org_old_id",
+                @NamedQuery(name = "Organisation.org_old_id",
+                 query = "SELECT o FROM Organisation o " +
+                        "WHERE o.oldOrgId = :org_old_id"),
+        @NamedQuery(name = "Organisation.org_short_nl",
                 query = "SELECT o FROM Organisation o " +
-                        "WHERE o.oldOrgId = :org_old_id")
+                        "WHERE o.shortNL = :org_short_nl")
 })
 @Table(name = "organisation",
         indexes = {@Index(name="org_nl_UI",columnList = "org_short_nl", unique = true),

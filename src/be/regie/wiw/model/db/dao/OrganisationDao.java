@@ -63,7 +63,32 @@ public class OrganisationDao extends AbstractDao2<Organisation> {
     }
 
     @Override
+    public List<Organisation> findField(String fieldName, String value) throws Exception {
+        List<Organisation> results = null;
+        switch (fieldName) {
+            case "org_short_nl":
+                TypedQuery<Organisation> query = entityManager.createNamedQuery("Organisation.org_short_nl", Organisation.class);
+                query.setParameter("org_short_nl", value);
+                results = query.getResultList();
+                break;
+            default:
+                throw new Exception("Unknown field");
+        }
+        return results;
+    }
+
+    @Override
     public Organisation findField1(String fieldName, Integer value) throws Exception {
+        List<Organisation> results = findField(fieldName, value);
+        switch (results.size()) {
+            case 0 : throw new Exception("No results");
+            case 1 : return results.get(0);
+            default: throw new Exception("Too many results");
+        }
+    }
+
+    @Override
+    public Organisation findField1(String fieldName, String value) throws Exception {
         List<Organisation> results = findField(fieldName, value);
         switch (results.size()) {
             case 0 : throw new Exception("No results");

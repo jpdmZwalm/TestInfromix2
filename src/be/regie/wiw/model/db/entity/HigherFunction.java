@@ -10,7 +10,7 @@ import javax.persistence.*;
         query = "SELECT h FROM HigherFunction h " +
         "WHERE h.shortFR = :hf_omschr_fr"),
 })
-@Table(name = "higherFunction")
+@Table(name = "HigherFunction")
 public class HigherFunction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

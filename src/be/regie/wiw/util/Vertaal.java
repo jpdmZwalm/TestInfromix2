@@ -11,6 +11,8 @@ public class Vertaal {
     private Map<String, String> mapGraadFR;
     private Map<String, String> mapFctNL;
     private Map<String, String> mapFctFR;
+    private Map<String, String> mapOrgShortNL;
+    private Map<String, String> mapOrgShortFR;
 
     private Vertaal() {
         mapGraadNL = null;
@@ -65,6 +67,8 @@ public class Vertaal {
             map.put("Chauffeur de la Ministre", "Chauffeur Ministre");
             map.put("Expert Statut Soicial Ind", "Expert Statut Social Ind");
             map.put("Programmeur-analist", "Programmeur-analyste");
+            map.put("Inspecteur général des Fiannces", "Inspecteur général des Finances");
+            map.put("Schoolstagiair", "Stagiaire scolaire");
             mapGraadFR = map;
         }
         return Collections.unmodifiableMap(mapGraadFR);
@@ -124,8 +128,29 @@ public class Vertaal {
             map.put("Statut social", "Statut Social");
             map.put("GESTIONNAIRE TECHNIQUE", "Gestionnaire Technique");
             map.put("Eerste-auditeur-revisor", "Premier-auditeur-revisor");
+            map.put("Inspecteur général des Fiannces", "Inspecteur général des Finances");
+            map.put("Schoolstagiair", "Stagiaire scolaire");
             mapFctFR = map;
         }
         return Collections.unmodifiableMap(mapFctFR);
     }
+
+    public Map<String, String> getMapOrgShortNL() {
+        if (mapOrgShortNL == null) {
+            Map<String, String> map = new HashMap<>();
+            map.put("BE2000", "BE-2000");
+            mapOrgShortNL = map;
+        }
+        return Collections.unmodifiableMap(mapOrgShortNL);
+    }
+
+    public Map<String, String> getMapOrgShortFR() {
+        if (mapOrgShortFR == null) {
+            Map<String, String> map = new HashMap<>();
+            map.put("BE2000", "BE-2000");
+            mapOrgShortFR = map;
+        }
+        return Collections.unmodifiableMap(mapOrgShortFR);
+    }
+
 }

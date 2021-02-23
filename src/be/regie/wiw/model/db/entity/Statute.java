@@ -3,10 +3,10 @@ package be.regie.wiw.model.db.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "statue",
+@Table(name = "statute",
         indexes = {@Index(name="st_nl_UI",columnList = "st_descr_nl", unique = true),
                 @Index(name="st_fr_UI",columnList = "st_descr_fr", unique = true)})
-public class Statue {
+public class Statute { //CHANGED : RENAMED
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pk_st_id")
@@ -24,10 +24,10 @@ public class Statue {
     @Column(name = "st_descr_fr", nullable = false, columnDefinition = "NCHAR(50)")
     private String descrFR;
 
-    public Statue() {
+    public Statute() {
     }
 
-    public Statue(String descrNL, String descrFR) {
+    public Statute(String descrNL, String descrFR) {
         this.descrNL = descrNL;
         this.descrFR = descrFR;
     }

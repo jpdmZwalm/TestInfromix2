@@ -2,6 +2,7 @@ package be.regie.wiw.control;
 
 import be.regie.wiw.model.db.dao.*;
 import be.regie.wiw.model.db.entity.*;
+import be.regie.wiw.model.db.entity.security.User;
 import be.regie.wiw.model.dbold.*;
 import be.regie.wiw.web.listener.DbConnect;
 
@@ -35,9 +36,9 @@ public class ConvertMain {
     }
 
     private void run() {
-        //convertWrkAdressFromPersons();      //TODO Planon?
-        //convertAdmAdressFromPersons();
-        //convertAdressFromService();
+        convertWrkAdressFromPersons();      //TODO Planon?
+        convertAdmAdressFromPersons();
+        convertAdressFromService();
         //convertApproach(); //aFormule
         //makeTransport();
         //convertClass();
@@ -45,14 +46,16 @@ public class ConvertMain {
         //convertFunction();
         //convertOrganisationFromPersons();
         //convertOrganisationFromService();
-        ////convertRoom();
+        //convertRoom();
         //convertTitle();
         //makeStatue();
         //convertService();
         //makeHigherFunction();
+
         //convertPerson();
+        //convertUserFromUsersecurity();
+
         //convertLicensePlate();
-        //convertUserSecurity();
         //serviceSetAddress();
         //serviceSetHead();
         //serviceSetHigher();
@@ -140,6 +143,21 @@ public class ConvertMain {
         }
     }
 
+
+    /*
+    TODO : Diensten die verkeerd stonden : aangepast
+    select fk_pe_srv_id from person
+    where (pe_fname = 'Erik' and pe_name = 'Hauwaert') => 11706 : ICT-Dienst en Levering
+
+    select fk_pe_srv_id from person
+    where (pe_fname = 'Lenard' and pe_name = 'Schockaert') => 11702 : ICT-Bedrijfstoepassingen
+
+    select fk_pe_srv_id from person
+    where (pe_fname = 'Tom' and pe_name = 'Marchand')  => 11702 : ICT-Bedrijfstoepassingen
+
+    select fk_pe_srv_id from person
+    where (pe_fname = 'Nicole' and pe_name = 'Vereeken') => 14241 : Vlaanderen Regio West-Bouw en Renovatie-Gent
+    */
     private int convertPerson() {
             boolean error = false;
             AbstractDaoOld daoOld = PersonsDaoOld.getInstance(connWIWOld);
@@ -187,7 +205,7 @@ public class ConvertMain {
 
                     //Room room
 
-                    Statue statue = statueDao.find(1); //Active
+                    Statute statue = statueDao.find(1); //Active
 
                     Title title = titleDao.findField1("ti_old_id", oldPerson.get("pe_titel").getIntValue());
 
@@ -206,12 +224,11 @@ public class ConvertMain {
                                        oldPerson.get("pe_email").getStrValue(),
                                        oldPerson.get("pe_werkgever").getStrValue(),
                                        oldPerson.get("pe_foto").getStrValue(),
-                                       fotoVisible, higherFunction,
-                                       null, //stamnr
-                                       new Date(),
-                                       addressAdmin, addressWork, approach, clazz, function, degree,
-                                    null, //room
-                                       statue, title, service, organisation);
+                                       fotoVisible, new Date(), addressAdmin, addressWork,
+                                       approach, clazz, function, degree, null, //room
+                                       statue, title, service, organisation,
+                                       null, //Speciality
+                                       higherFunction);
 
                     person.setOldId(oldPerson.get("pe_id").getIntValue());
                     person.setOldSource(daoOld.getTableName());
@@ -251,6 +268,79 @@ public class ConvertMain {
                 em.close();
             }
         }
+
+    private int convertUserFromUsersecurity() {
+        boolean error = false;
+        AbstractDaoOld daoOld = new UsersecurityDaoOld(connWIWOld);
+        EntityManager em = entityManagerFactory.createEntityManager();
+        PersonDao personDao = new PersonDao(em);
+        AbstractDao2<User> daoNew = new UserDao(em);
+        int aantal = 0;
+        List<Map<String, ColumnDescriptor>> oldList = daoOld.getAll();
+        System.out.println(String.format("%5d User uit %10s gevonden", oldList.size(), daoOld.getTableName()));
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            for (Map<String, ColumnDescriptor> oldUser : oldList) {
+                Integer oldpeId = oldUser.get("uss_peid").getIntValue();
+                if (oldpeId == null ||oldpeId == 0) {
+                    System.out.println("NOT : " + oldUser.get("uss_windowsaccount").getStrValue());
+                    continue;
+                }
+                String str_group = oldUser.get("uss_group").getStrValue();
+                if ("".equals(str_group))
+                    str_group = null;
+                Integer uss_group = str_group == null ? null :  Integer.parseInt(str_group);
+                Person person = personDao.findField1("pe_old_id", oldpeId);
+                User user = new User(
+                        oldUser.get("uss_windowsaccount").getStrValue(), //"uss_userid" windowsaccount in kleine letters
+                        null,
+                        uss_group,
+                        oldUser.get("uss_privacy").getIntValue(),
+                        oldUser.get("uss_statistics").getIntValue(),
+                        person);
+                user.setOldId(oldUser.get("uss_peid").getIntValue());
+                user.setOldSource(daoOld.getTableName());
+                //System.out.println(user);
+
+                /*
+                if (daoNew.exists(user)) {
+                    System.out.print("."); xxxx
+                    continue;
+                }
+                 */
+                try {
+                    daoNew.persist(user);
+                    System.out.print("+");
+                    aantal++;
+                } catch (PersistenceException ex) {
+                    System.out.println("Fout in user oldId : " + user.getOldId());
+                    System.out.println(ex.getMessage());
+                    System.out.println(user.toString());
+                    error = true;
+                }
+            }
+            if (error) {
+                tx.rollback();
+                aantal = 0;
+            } else {
+                tx.commit();
+                System.out.println(String.format("\n%5d user geconverteerd naar %10s", aantal, daoNew.getTableName()));
+            }
+            return aantal;
+        } catch (ColumnDescriptor.DataTypeException e) {
+            e.printStackTrace();
+            tx.rollback();
+            return 0;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            tx.rollback();
+            return 0;
+        } finally {
+            em.close();
+        }
+    }
 
     private Degree findDegree(DegreeDao degreeDao, Map<String, ColumnDescriptor> oldPerson) throws ColumnDescriptor.DataTypeException, Exception {
         switch (oldPerson.get("pe_taal").getStrValue()) {
@@ -303,16 +393,16 @@ public class ConvertMain {
                    => 7 services zijn dubbel :
                                               : srv_id     : srv_dnst_id : srv_dnst_code  : srv_hogere_dienst
                     PO-Log Die                : 166 en 385 : 263 en 544  : 11240 en 11265 : 164 en 238
-                    PO-Log Die-Alg Za-Bodes   : 184 en 305 : 193 en 465  : 11245 en 11284 : 181 en 386
-                    PO-Log Die-Alg Za-Onth    : 180 en 308 : 191 en 468  : 11243 en 11287 : 181 en 386
-                    PO-Log Die-Alg Za-Schoonm : 185 en 307 : 192 en 467  : 11244 en 11286 : 181 en 386
                     PO-Log Die-Alg Za-Verz    : 182 en 306 : 194 en 466  : 11246 en 11285 : 181 en 386
-                    PO-Log Die-Econ           : 153 en 302 :  84 en 462  : 11249 en 11281 : 166 en 386
                     PO-Log Die-Vert           : 208 en 301 :  85 en 461  : 11248 en 11280 : 166 en 385
+                    PO-Log Die-Econ           : 153 en 302 :  84 en 462  : 11249 en 11281 : 166 en 386
+                    PO-Log Die-Alg Za-Onth    : 180 en 308 : 191 en 468  : 11243 en 11287 : 181 en 386
+                    PO-Log Die-Alg Za-Bodes   : 184 en 305 : 193 en 465  : 11245 en 11284 : 181 en 386
+                    PO-Log Die-Alg Za-Schoonm : 185 en 307 : 192 en 467  : 11244 en 11286 : 181 en 386
                    Deze gehouden met meest volledige info
                    Let wel srv_hogere_dienst is telkens verschillend
                  */
-        Integer[] dubbels = {385, 305, 308, 307, 306, 302, 301};
+        Integer[] dubbels = {385, 306, 301, 302, 308, 305, 307};
         List<Integer> dubbelsList = Arrays.asList(dubbels);
 
         boolean error = false;
@@ -328,7 +418,7 @@ public class ConvertMain {
             tx.begin();
             for (Map<String, ColumnDescriptor> oldService : oldList) {
                 Organisation organisation =
-                        organisationDao.findField1("org_old_org_id", oldService.get("srv_org_id").getIntValue());
+                        organisationDao.findField1("org_short_nl", oldService.get("srv_org_komschr_nl").getStrValue());
                 Service service =
                         new Service(oldService.get("srv_dnst_id").getIntValue(),
                                     oldService.get("srv_dnst_code").getIntValue(),
@@ -383,23 +473,23 @@ public class ConvertMain {
 
     private int makeStatue() {
         EntityManager em = entityManagerFactory.createEntityManager();
-        AbstractDao2<Statue> daoNew = new StatueDao(em);
+        AbstractDao2<Statute> daoNew = new StatueDao(em);
         EntityTransaction tx = em.getTransaction();
         int aantal = 0;
         try {
             tx.begin();
 
-            Statue statue = new Statue("Aktief", "Active");
+            Statute statue = new Statute("Aktief", "Actif");
             statue.setOldId(0); statue.setOldSource("");
             daoNew.persist(statue);
             aantal++;
 
-            statue = new Statue("Langdurig Afwezig", "Absence prolongée");
+            statue = new Statute("Langdurig Afwezig", "Absence prolongée");
             statue.setOldId(0); statue.setOldSource("");
             daoNew.persist(statue);
             aantal++;
 
-            statue = new Statue("Op Pensioen", "Retraité");
+            statue = new Statute("Op Pensioen", "Retraité");
             statue.setOldId(0); statue.setOldSource("");
             daoNew.persist(statue);
             aantal++;
@@ -607,16 +697,17 @@ public class ConvertMain {
                 organisation.setOldOrgId(oldOrg.get("srv_org_id").getIntValue());
 
                 List<Organisation> organisationExisting =
-                        daoNew.findField("org_old_org_id", oldOrg.get("srv_org_id").getIntValue());
+                        daoNew.findField("org_old_id", oldOrg.get("srv_org_id").getIntValue());
                 if (organisationExisting.size() != 0) { //Bestaat reeds
                     System.out.print(".");
                     continue;
                 }
-
+                /*
                 if (daoNew.exists(organisation)) {
                     System.out.print(".");
                     continue;
                 }
+                 */
                 try {
                     daoNew.persist(organisation);
                     System.out.print("+");
@@ -893,6 +984,19 @@ public class ConvertMain {
         }
     }
 
+    /* TODO
+    2 * : Consultant - Externe => Extern - Consultant / Consultant externe = > Externe consultant
+    •	System administrator  Administrateur système
+    •	(A1/A2/A3/A4) Legistique et Litiges  Légistique et Litiges
+    •	Eerste-auditeur-revisor  Premier – auditeur – réviseur
+    •	Network Engineer  Ingénieur réseau
+    •	Adjunct -controleur  Contrôleur adjoint
+    •	Eerste controleur  Premier contrôleur
+    •	Entretien electricité  Entretien électricité
+    •	Architect  Architecte
+    •	Analyste developpeur  Analyste développeur
+    •	Dokter  Docteur
+     */
     private int convertDegree() {
         boolean error = false;
         AbstractDaoOld daoOld = PersonsDaoOld.getInstance(connWIWOld);

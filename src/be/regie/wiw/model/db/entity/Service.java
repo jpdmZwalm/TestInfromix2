@@ -47,7 +47,7 @@ public class Service {
     @Column(name="srv_dnst_id", nullable = true)
     private Integer dnstId;
 
-    @Column(name="srv_dnst_code", nullable = true, columnDefinition = "CHAR(5)")
+    @Column(name="srv_dnst_code", nullable = true, columnDefinition = "CHAR(6)") //CHANGED : 5 => 6
     private Integer dnstCode;
 
     //TODO was 50 => 70
@@ -128,7 +128,7 @@ public class Service {
     }
 
     public void setDnstId(Integer dnstId) {
-        if (dnstId == 0)
+        if ((dnstId != null) && dnstId.equals(0))
             dnstId = null;
         this.dnstId = dnstId;
     }
@@ -138,7 +138,7 @@ public class Service {
     }
 
     public void setDnstCode(Integer dnstCode) {
-        if (dnstCode == 0)
+        if ((dnstCode != null) && dnstCode.equals(0))
             dnstCode = null;
         this.dnstCode = dnstCode;
     }
