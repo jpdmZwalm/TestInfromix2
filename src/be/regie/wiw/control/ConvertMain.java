@@ -36,9 +36,9 @@ public class ConvertMain {
     }
 
     private void run() {
-        convertWrkAdressFromPersons();      //TODO Planon?
-        convertAdmAdressFromPersons();
-        convertAdressFromService();
+        //convertWrkAdressFromPersons();      //TODO Planon?
+        //convertAdmAdressFromPersons();
+        //convertAdressFromService();
         //convertApproach(); //aFormule
         //makeTransport();
         //convertClass();
@@ -61,6 +61,7 @@ public class ConvertMain {
         //serviceSetHigher();
         //personSetAdrAdmin();
         //personSetRoom();
+        personsSetDienstHoofd();
     }
 
     private void personSetAdrAdmin() {
@@ -267,7 +268,90 @@ public class ConvertMain {
             } finally {
                 em.close();
             }
+    }
+
+    /*
+        Als een persoon tot een dienst behoort zonder diensthoofd
+        Emails van dienthoofden not found in new Person
+        * ann.pannecoucke@bosa.fgov.be
+        * nakayika.nanga@buildingsagency.be
+        * eddy.blontrock@buildingsagency.be
+        * freddy.tavernier@buildingsagency.be
+        * dirk.vaneylen@bosa.fgov.be
+
+        Controle
+        select p.pk_pe_id, p.pe_name, p.pe_fname, p.pe_email,
+               ps.pe_email as SRVDHEmail,
+               dh.pe_email as DHEmail,
+               fc.pe_email as FCEmail
+        from person p
+            left join person dh on dh.pk_pe_id = p.fk_pe_dh
+            left join person fc on fc.pk_pe_id = p.fk_pe_fc
+            left join service s on s.pk_srv_id = p.fk_pe_srv_id
+            left join person ps on ps.pk_pe_id = s.fk_srv_pe_id_head
+        where ps.pe_email is null
+          and dh.pe_email is null
+          and fc.pe_email is null
+     */
+    private void personsSetDienstHoofd() {
+        DienstHoofdDaoOld dienstHoofdDaoOld = new DienstHoofdDaoOld(connWIWOld);
+        EntityManager em = entityManagerFactory.createEntityManager();
+        PersonDao personDao = new PersonDao(em);
+        List<Person> persons = personDao.findAll();
+        for (Person person : persons) {
+            Integer oldId = person.getOldId();
+            if (oldId == null) {
+                continue;
+            }
+            Map<String, ColumnDescriptor> dienstHoofdMap = dienstHoofdDaoOld.getById(oldId);
+            ColumnDescriptor diensthoofd_emailCol = dienstHoofdMap.get("diensthoofd_email");
+            ColumnDescriptor functieChef_emailCol = dienstHoofdMap.get("functchef_email");
+            Person diensthoofd = findPersonByEmail(personDao, diensthoofd_emailCol);
+            Person functieChef = findPersonByEmail(personDao, functieChef_emailCol);
+            System.out.print(person.getEmail() + " => ");
+            System.out.print(diensthoofd == null ? "NULL" : diensthoofd.getEmail() + " => ");
+            System.out.print(functieChef == null ? "NULL" : functieChef.getEmail());
+            System.out.println();
+            person.setDienstHoofd(diensthoofd);
+            person.setFunctieChef(functieChef);
+            EntityTransaction tx = em.getTransaction();
+            try {
+                tx.begin();
+                personDao.update(person);
+                tx.commit();
+            } catch (Exception ex) {
+                tx.rollback();
+                System.out.println(ex.getMessage());
+            }
         }
+    }
+
+    private Person findPersonByEmail(PersonDao personDao, ColumnDescriptor emailCol) {
+        String email = null;
+        if (emailCol != null) {
+            try {
+                email = emailCol.getStrValue();
+            } catch (ColumnDescriptor.DataTypeException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        Person person = null;
+        if (email != null) {
+            email = email.toLowerCase();
+            email = email.replace("regiedergebouwen.be", "buildingsagency.be");
+            email = email.replace("regiedesbatiments.be", "buildingsagency.be");
+            //Pe_id opzoeken in Person
+            try {
+                person = personDao.findField1("email", email);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return person;
+    }
+
 
     private int convertUserFromUsersecurity() {
         boolean error = false;
@@ -936,12 +1020,12 @@ public class ConvertMain {
             tx.begin();
             for (Map<String, ColumnDescriptor> oldClass : oldList) {
                 CClass aClass = new CClass(
-                        oldClass.get("pe_vak_komschr_nl").getStrValue(),
-                        oldClass.get("pe_vak_komschr_fr").getStrValue(),
+                        //oldClass.get("pe_vak_komschr_nl").getStrValue(),
+                        //oldClass.get("pe_vak_komschr_fr").getStrValue(),
                         oldClass.get("pe_vak_omschr_nl").getStrValue(),
                         oldClass.get("pe_vak_omschr_fr").getStrValue()
                 );
-                if (aClass.getShortNL() == null && aClass.getShortFR() == null &&
+                if (//aClass.getShortNL() == null && aClass.getShortFR() == null &&
                     aClass.getLongNL()  == null && aClass.getLongFR() == null) {
                     continue;
                 }

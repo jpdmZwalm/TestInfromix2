@@ -2,6 +2,10 @@ package be.regie.wiw.model.db.entity;
 
 import be.regie.wiw.model.db.entity.security.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.Setter;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
 
 import javax.persistence.*;
 import java.util.Collections;
@@ -10,9 +14,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@NamedQueries({@NamedQuery(name = "Person.ExistsCode",
-        query = "SELECT p FROM Person p " +
-                "WHERE p.code = :code"),
+@NamedQueries({
+        @NamedQuery(name = "Person.ExistsCode",
+                query = "SELECT p FROM Person p " +
+                        "WHERE p.code = :code"),
         @NamedQuery(name = "Person.ExistsName",
                 query = "SELECT p FROM Person p " +
                         "WHERE p.name = :name " +
@@ -23,7 +28,10 @@ import java.util.Set;
         @NamedQuery(name = "Person.serviceHead",
                 query = "SELECT p FROM Person p " +
                         "JOIN Service s ON p.id = s.head.id " +
-                        "WHERE s.id = :serviceId")
+                        "WHERE s.id = :serviceId"),
+        @NamedQuery(name = "Person.email",
+                query = "SELECT p FROM Person p " +
+                        "WHERE p.email = :email")
 })
 @Table(name = "person",
         indexes = {@Index(name = "pe_name_UI", columnList = "pe_name, pe_fname", unique = true)})
@@ -33,17 +41,28 @@ import java.util.Set;
 //ON dbo.person
 //WHERE pe_code IS NOT NULL;
 
+
+
+
+
+
+
+
 public class Person {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="pk_pe_id")
     private Integer id;
 
+
     @Column(name="pe_old_id")
     private Integer oldId;
 
+
     @Column(name="pe_old_source", columnDefinition = "CHAR(20)")
     private String oldSource;
+
 
     @Column(name="pe_code", nullable = true)
     private Integer code;
@@ -88,29 +107,25 @@ public class Person {
     @Column(name="pe_external") //CHANGED : NEW
     private boolean external;
 
-    /*CHANGED : IS WEG
-    @Column(name="pe_stamnr", columnDefinition = "CHAR(20)")
-    private String stamnr;
-     */
-
+    //TODO Nodig om dit nog in code te doen?
+    @Generated(GenerationTime.ALWAYS)
     @Column(name="pe_updated", nullable = false, columnDefinition="DATETIME DEFAULT GETDATE()")
     @Temporal(TemporalType.DATE)
     private Date updated;
 
-    /*CHANGED : IS WEG
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "fk_pe_hf_id")
-    private HigherFunction higherFunction;
-     */
 
-    //TODO alter table "dbo"."person" alter column fk_pe_adr_id_adm int not null
+    //TODO DATABASE :  pe_stamnr moet weg bij hergenereren database
+    //TODO DATABASE :  fk_pe_adr_id_adm moet weg bij hergenereren database, is het adres van de service
+    //TODO DATABASE :  alter table "dbo"."person" alter column fk_pe_adr_id_adm int not null
     @ManyToOne(optional = true)
     @JoinColumn(name = "fk_pe_adr_id_adm")
+    //TODO DATABASE :  is adres van de service
     private Address addressAdmin;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "fk_pe_adr_id_wrk")
     private Address addressWork;
+
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "fk_pe_app_id")
@@ -134,7 +149,6 @@ public class Person {
     private Room room;
      */
 
-    // CHANGED : RENAMED xx
     @ManyToOne(optional = false)
     @JoinColumn(name = "fk_pe_st_id")
     private Statute statute;
@@ -143,11 +157,13 @@ public class Person {
     @JoinColumn(name = "fk_pe_ti_id")
     private Title title;
 
+
     //TODO Service-PersonHead en Person-Service : 2 * not null
     @ManyToOne(optional = false)
     @JoinColumn(name = "fk_pe_srv_id")
     private Service service;
 
+    // TODO bepaald door de service, maar veel werk in de client
     @ManyToOne(optional = false)
     @JoinColumn(name = "fk_pe_org_id")
     private Organisation org;
@@ -164,6 +180,16 @@ public class Person {
     @OneToOne(optional = true, mappedBy = "person")
     private User user;
 
+    @Setter
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "fk_pe_dh")
+    private Person dienstHoofd;
+
+    @Setter
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "fk_pe_fc")
+    private Person functieChef;
+
     @ManyToMany()
     @JoinTable(
             name = "person_secgrp",
@@ -174,6 +200,8 @@ public class Person {
     public Person() {
         this.securityGroups = new HashSet<>();  //CHANGED : NEW
     	}
+
+
 
     public Person(Integer code, String nationalNumber, String name, String fname, String language,
                   String tel, String mobile, String email, String employer, String photo,
@@ -200,8 +228,6 @@ public class Person {
         this.employer = employer;
         this.photo = photo;
         this.photoVisible = photoVisible;
-        //this.higherFunction = higherFunction; //CHANGED : WEG
-        //this.stamnr = stamnr; //CHANGED : WEG
         this.updated = updated;
         this.addressAdmin = addressAdmin;
         this.addressWork = addressWork;
@@ -466,5 +492,8 @@ public class Person {
         return this.securityGroups.contains(securityGroup);
     }
 
+    public User getUser() {
+        return user;
+    }
 }
 

@@ -1,7 +1,6 @@
 package be.regie.wiw.model.db.dao;
 
 import be.regie.wiw.model.db.entity.Person;
-import be.regie.wiw.model.db.entity.Title;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -98,8 +97,36 @@ public class PersonDao extends AbstractDao2<Person> {
     }
 
     @Override
+    public List<Person> findField(String fieldName, String value) throws Exception {
+        List<Person> results = null;
+        switch (fieldName) {
+            case "email":
+                TypedQuery<Person> queryEmail = entityManager.createNamedQuery("Person.email", Person.class);
+                queryEmail.setParameter("email", value);
+                results = queryEmail.getResultList();
+                break;
+            default:
+                throw new Exception("Unknown field");
+        }
+        return results;
+    }
+
+
+    @Override
     public Person findField1(String fieldName, Integer value) throws Exception {
         if (value == null || value == 0)
+            return null;
+        List<Person> results = findField(fieldName, value);
+        switch (results.size()) {
+            case 0 : throw new Exception("Not found");
+            case 1 : return results.get(0);
+            default: throw new Exception("Too many results");
+        }
+    }
+
+    @Override
+    public Person findField1(String fieldName, String value) throws Exception {
+        if (value == null || value == "")
             return null;
         List<Person> results = findField(fieldName, value);
         switch (results.size()) {

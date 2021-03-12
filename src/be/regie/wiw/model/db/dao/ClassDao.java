@@ -51,7 +51,7 @@ public class ClassDao extends AbstractDao2<CClass> {
     public boolean exists(CClass aClass) throws PartialExistingException {
         boolean existsNL = false;
         TypedQuery queryNL = entityManager.createNamedQuery("CClass.ExistsNL", CClass.class);
-        queryNL.setParameter("shortNL", aClass.getShortNL());
+        //queryNL.setParameter("shortNL", aClass.getShortNL());
         queryNL.setParameter("longNL", aClass.getLongNL());
         List<CClass> theListNL = queryNL.getResultList();
         if (theListNL.size() > 0) {
@@ -60,7 +60,7 @@ public class ClassDao extends AbstractDao2<CClass> {
 
         boolean existsFR = false;
         TypedQuery queryFR = entityManager.createNamedQuery("CClass.ExistsFR", CClass.class);
-        queryFR.setParameter("shortFR", aClass.getShortFR());
+        //queryFR.setParameter("shortFR", aClass.getShortFR());
         queryFR.setParameter("longFR", aClass.getLongFR());
         List<CClass> theListFR = queryFR.getResultList();
         if (theListFR.size() > 0) {
